@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ: Dataverse Record Size</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2 {
+            color: #0078d4;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        code {
+            background-color: #eef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: "Consolas", "Courier New", monospace;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .highlight {
+            background-color: #fffbe6;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>FAQ: Is it Possible to Get the Size of Each Record in Dataverse?</h1>
+
+        <div class="highlight">
+            <p><strong>The Direct Answer:</strong> No, it is <strong>not possible</strong> to get the precise, all-inclusive storage size of each individual record in Dataverse through standard administration tools.</p>
+        </div>
+
+        <h2>Why Isn't This a Feature?</h2>
+        <p>The platform is designed to track storage at a higher, aggregated level (by table) for performance and architectural reasons.</p>
+        <ol>
+            <li><strong>Aggregated by Design:</strong> Dataverse tracks storage consumption at the <strong>table level</strong>. The underlying database architecture is complex, and a single Dataverse record can have its data spread across multiple internal tables, making a per-record calculation inefficient.</li>
+            <li><strong>Complex Storage Model:</strong> A single logical record can consume all three types of storage:
+                <ul>
+                    <li><strong>Database Storage:</strong> For structured data like text and numbers.</li>
+                    <li><strong>File Storage (Azure Blob):</strong> For attachments in notes or emails.</li>
+                    <li><strong>Log Storage:</strong> For the record's audit history.</li>
+                </ul>
+                Because these components are physically separate, there is no single "record size" metric available.
+            </li>
+        </ol>
+
+        <h2>The Practical Solution: A Top-Down Approach</h2>
+        <p>While you can't get the size of a single record, you can still effectively find and manage the largest consumers of your storage by starting high and drilling down.</p>
+        
+        <h3>Step 1: Identify the Largest Tables</h3>
+        <p>Use the Power Platform Admin Center (PPAC) storage report to find which tables use the most storage. Navigate to <strong>Resources > Capacity</strong>, select your environment, and review the consumption tabs.</p>
+
+        <h3>Step 2: Analyze Data Within Those Tables</h3>
+        <p>Once you identify a problematic table (e.g., <code>Annotation</code> for File storage), you can investigate its data.</p>
+        <h4>Example: Finding Large Attachments</h4>
+        <p>The <code>Annotation</code> (Note) table has a <code>filesize</code> column that stores the attachment size in bytes. You can query this table using tools like Power Automate or the XrmToolBox to sort notes by <code>filesize</code> and find the largest ones.</p>
+        
+        <hr>
+
+        <h2>Summary</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Your Goal</th>
+                    <th>The Recommended Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Get the size of a specific, single record.</td>
+                    <td><strong>Not Possible.</strong></td>
+                </tr>
+                <tr>
+                    <td>Find what is consuming the most storage.</td>
+                    <td>1. Check the <strong>PPAC report</strong> to find the largest <strong>tables</strong>.<br>2. <strong>Query the data</strong> within those tables to find the largest items (e.g., sort notes by <code>filesize</code>).</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
