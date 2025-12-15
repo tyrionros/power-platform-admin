@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Platform & Dataverse Storage</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="presentation-container">
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>Power Platform & Dataverse</h1>
+            <h2>Storage & Administration</h2>
+            <p>An illustrated guide</p>
+        </div>
+
+        <!-- Slide 2: What is Power Platform? -->
+        <div class="slide">
+            <h2>What is the Power Platform?</h2>
+            <ul>
+                <li><strong>Power Apps:</strong> Build custom apps for your business needs.</li>
+                <li><strong>Power Automate:</strong> Create automated workflows and processes.</li>
+                <li><strong>Power BI:</strong> Deliver insights and enable informed decisions.</li>
+                <li><strong>Power Virtual Agents:</strong> Create powerful chatbots without code.</li>
+            </ul>
+            <p class="footnote">At the heart of the platform lies <strong>Dataverse</strong>.</p>
+        </div>
+
+        <!-- Slide 3: What is Dataverse? -->
+        <div class="slide">
+            <h2>What is Dataverse?</h2>
+            <p>More than a database, it's a scalable and intelligent data service.</p>
+            <ul>
+                <li><strong>Tables:</strong> Model and manage business data (e.g., Accounts, Contacts).</li>
+                <li><strong>Columns & Rows:</strong> Define the structure and hold the data.</li>
+                <li><strong>Rich Features:</strong> Supports complex relationships, business logic, and robust security.</li>
+            </ul>
+        </div>
+
+        <!-- Slide 4: The Three Storage Types -->
+        <div class="slide">
+            <h2>Dataverse Storage: The Three Types</h2>
+            <div class="columns">
+                <div class="col">
+                    <h3>Database</h3>
+                    <p>Structured, transactional data. (e.g., Account records, business process flows).</p>
+                    <p class="tech">Stored in Azure SQL.</p>
+                </div>
+                <div class="col">
+                    <h3>File</h3>
+                    <p>Unstructured data and attachments. (e.g., PDFs, images in notes, email attachments).</p>
+                    <p class="tech">Stored in Azure Blob Storage.</p>
+                </div>
+                <div class="col">
+                    <h3>Log</h3>
+                    <p>Change logs and audit trails. (e.g., Record updates, deletions, system job logs).</p>
+                    <p class="tech">Optimized for audit data.</p>
+                </div>
+            </div>
+            <div class="placeholder">[Illustration: Diagram of the three storage types]</div>
+        </div>
+
+        <!-- Slide 5: How to Check Storage -->
+        <div class="slide">
+            <h2>How to Check Your Storage</h2>
+            <ol>
+                <li>Navigate to the <strong>Power Platform Admin Center (PPAC)</strong>.</li>
+                <li>Go to <strong>Resources > Capacity</strong>.</li>
+                <li>Review the <strong>Summary</strong> tab for a tenant-wide overview.</li>
+                <li>Select an environment to drill down into details.</li>
+            </ol>
+            <div class="placeholder">[Illustration: Screenshot of the PPAC Capacity summary page]</div>
+        </div>
+        
+        <!-- Slide 6: Storage Details -->
+        <div class="slide">
+            <h2>Drilling Down into Storage Details</h2>
+            <p>In the environment view, check the tabs:</p>
+            <ul>
+                <li><strong>Database Tab:</strong> Shows top tables by data size.</li>
+                <li><strong>File Tab:</strong> Shows top tables using file storage (often Notes or Attachments).</li>
+                <li><strong>Log Tab:</strong> Shows top tables consuming log capacity.</li>
+            </ul>
+            <div class="placeholder">[Illustration: Screenshot of environment-level storage drill-down]</div>
+        </div>
+
+        <!-- Slide 7: Common Causes of High Usage -->
+        <div class="slide">
+            <h2>Common Causes of High Storage Usage</h2>
+            <ul>
+                <li><strong>Database:</strong> Old system jobs (`AsyncOperationBase`), wide tables, verbose auditing.</li>
+                <li><strong>File:</strong> Email attachments (`Attachment`) and notes with attachments (`Annotation`).</li>
+                <li><strong>Log:</strong> Over-auditing of high-transaction tables.</li>
+            </ul>
+        </div>
+
+        <!-- Slide 8: Cleanup Strategies -->
+        <div class="slide">
+            <h2>Administration & Cleanup Strategies</h2>
+            <ul>
+                <li><strong>Use Bulk Delete Jobs:</strong> Create recurring jobs to clean up completed system jobs and old audit logs. This is your most important tool.</li>
+                <li><strong>Manage Attachments:</strong> Educate users and consider using SharePoint integration for document storage.</li>
+                <li><strong>Optimize Auditing:</strong> Be selective about what you audit and review retention periods.</li>
+            </ul>
+            <div class="placeholder">[Illustration: Screenshot of setting up a bulk delete job]</div>
+        </div>
+
+        <!-- Slide 9: PowerShell Administration -->
+        <div class="slide">
+            <h2>PowerShell for Administration</h2>
+            <p>Automate and report on storage using PowerShell cmdlets.</p>
+            <div class="code-block">
+                <pre><code># 1. Install the module (one-time setup)
+Install-Module -Name Microsoft.PowerApps.Administration.PowerShell
+
+# 2. Connect to your tenant
+Add-PowerAppsAccount
+
+# 3. Get tenant-wide capacity
+Get-AdminPowerAppCapacity
+
+# 4. Get consumption for an environment
+Get-AdminPowerAppEnvironmentConsumption -EnvironmentName &lt;YourEnvName&gt;</code></pre>
+            </div>
+            <p class="footnote">A powerful tool for scripting and automation.</p>
+        </div>
+
+        <!-- Slide 10: Capacity Management -->
+        <div class="slide">
+            <h2>Capacity Management & Add-ons</h2>
+            <ul>
+                <li>You will get notifications when you approach storage limits.</li>
+                <li>There is a grace period, but admin operations may become restricted.</li>
+                <li>If optimization isn't enough, you can purchase capacity add-ons via the Microsoft 365 admin center.</li>
+            </ul>
+        </div>
+        
+        <!-- Slide 11: Summary -->
+        <div class="slide">
+            <h2>Summary & Key Takeaways</h2>
+            <ol>
+                <li><strong>Be Proactive:</strong> Regularly monitor your storage.</li>
+                <li><strong>Know the Types:</strong> Understand Database, File, and Log capacity.</li>
+                <li><strong>Use the Tools:</strong> Leverage Bulk Delete Jobs and PowerShell.</li>
+                <li><strong>Govern Your Data:</strong> Establish a clear governance plan.</li>
+                <li><strong>Optimize First:</strong> Try to clean up before buying more capacity.</li>
+            </ol>
+        </div>
+
+        <!-- Slide 12: End -->
+        <div class="slide">
+            <h2>Q&A</h2>
+            <p>Thank you!</p>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button id="prevBtn">&laquo; Prev</button>
+        <span id="slide-counter"></span>
+        <button id="nextBtn">Next &raquo;</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
