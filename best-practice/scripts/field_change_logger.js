@@ -5,49 +5,58 @@ var PowerAdmin = window.PowerAdmin || {};
 PowerAdmin.FieldChangeLogger = (function () {
 
     /**
-     * A generic OnChange event handler that logs details of the changed field.
-     * This function should be registered on the OnChange event of each field you want to monitor.
+     * An OnChange event handler that creates a record in a custom log entity.
      * @param {object} executionContext - The execution context passed automatically by the form event.
      */
-    function logFieldChange(executionContext) {
+    async function logFieldChange(executionContext) {
         try {
-            // Get the formContext object
             const formContext = executionContext.getFormContext();
-
-            // Get the specific attribute that triggered this event
             const changedAttribute = executionContext.getEventSource();
             const attributeName = changedAttribute.getName();
             const attributeValue = changedAttribute.getValue();
 
-            // Log the field's name to the browser's developer console (press F12 to view)
-            console.log(`Field '${attributeName}' has changed.`);
+            // 1. Get info about the source record being edited
+            const sourceRecordId = formContext.data.entity.getId().replace(/[{}]/g, ""); // Clean the curly braces from the GUID
+            const sourceEntityName = formContext.data.entity.getEntityName();
 
-            // Check if the value is a Lookup (which is an array of objects)
+            // 2. Format the new field value into a single string for logging
+            let newValueForLog = "(empty)";
             if (Array.isArray(attributeValue) && attributeValue.length > 0) {
-                const lookupValue = attributeValue[0]; // Get the first item in the lookup array
-                console.log(`  New Value (Lookup):`);
-                console.log(`    - ID: ${lookupValue.id}`);
-                console.log(`    - Name: ${lookupValue.name}`);
-                console.log(`    - Entity Type: ${lookupValue.entityType}`);
-            }
-            // Check for Option Set or other simple types
-            else if (attributeValue !== null && attributeValue !== undefined) {
-                 // For Option Sets, getValue() returns the integer value.
-                 // getText() returns the user-facing label.
+                // Handle Lookup fields
+                const lookupValue = attributeValue[0];
+                newValueForLog = `ID: ${lookupValue.id}, Name: ${lookupValue.name}, Type: ${lookupValue.entityType}`;
+            } else if (attributeValue !== null && attributeValue !== undefined) {
+                // Handle Option Sets, Text, Numbers, etc.
                 const attributeText = changedAttribute.getText ? changedAttribute.getText() : attributeValue.toString();
-                console.log(`  New Value: ${attributeText} (Raw value: ${attributeValue})`);
+                newValueForLog = `${attributeText} (Raw value: ${attributeValue})`;
             }
-            else {
-                // The field is empty (null or undefined)
-                console.log(`  New Value: (empty)`);
-            }
+
+            // 3. Construct the data object for the new log record.
+            //    The keys here MUST match the logical names of the fields in your 'ams_logsfieldchange' entity.
+            const logData = {
+                "ams_fieldname": attributeName,
+                "ams_newvalue": newValueForLog,
+                "ams_sourceentity": sourceEntityName,
+                "ams_sourcerecordid": sourceRecordId,
+                // Set the primary name field (e.g., 'ams_name') for the log entity to something descriptive.
+                "ams_name": `Change on ${attributeName} for ${sourceEntityName} record`
+            };
+
+            // 4. Use Xrm.WebApi.createRecord to create the log entry asynchronously
+            const entityLogicalName = "ams_logsfieldchange";
+            console.log(`Attempting to create '${entityLogicalName}' record...`); // Log for debugging
+
+            const result = await Xrm.WebApi.createRecord(entityLogicalName, logData);
+            console.log(`Successfully created log record with ID: ${result.id}`); // Log for debugging
 
         } catch (e) {
-            console.error("An error occurred in the logFieldChange function:", e);
+            console.error(`Failed to create log record: ${e.message}`); // Log error for debugging
+            // Optionally, show a non-blocking error notification to the user on the form
+            formContext.ui.setFormNotification(`Could not save field change log. Error: ${e.message}`, "ERROR", "FieldChangeLogError");
         }
     }
 
-    // Expose the function publicly so it's accessible from the form's event handler configuration
+    // Expose the function publicly
     return {
         logFieldChange: logFieldChange
     };
