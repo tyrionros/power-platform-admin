@@ -77,3 +77,36 @@ dotnet tool update --global Microsoft.PowerApps.CLI.Tool
 
 *   **`pac: command not found`**: This almost always means the `~/.dotnet/tools` directory is not in your shell's `PATH`. Go back to **Step 3: Configure Your Shell Path** and ensure the export command was run correctly and your shell profile was reloaded.
 *   **Permission Errors:** If you encounter permission issues, ensure your user account has the necessary rights to install software and write to your home directory configuration files.
+
+---
+
+## 6. Recommended Command-Line Toolchain
+
+While the Power Platform CLI (PAC) is the cornerstone, a comprehensive command-line strategy often involves a combination of tools.
+
+### Power Platform CLI (PAC) - Your Primary Tool
+This is the modern, cross-platform tool this guide covers. It is essential for developers and anyone involved in Application Lifecycle Management (ALM).
+*   **Best for:** Solution management, Dataverse environment management, Power Pages, Code Components (PCF), and CI/CD integration.
+*   **Why:** It's the official, actively developed CLI with the broadest support for developer and ALM tasks across all platforms.
+
+### PowerShell Modules - For Administration and Automation
+PowerShell is incredibly powerful for automating administrative tasks. On a Mac, you would first need to [install PowerShell Core](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-macos).
+*   **Key Modules:**
+    *   `Microsoft.PowerApps.Administration.PowerShell`: For **administrators**. Manages environments, DLP policies, and user permissions.
+        *   *Install:* `Install-Module -Name Microsoft.PowerApps.Administration.PowerShell`
+    *   `Microsoft.PowerApps.PowerShell`: For **makers/developers**. Manages specific resources like Power Apps, Flows, and Connectors.
+        *   *Install:* `Install-Module -Name Microsoft.PowerApps.PowerShell`
+*   **Why:** Excels at bulk operations and administrative scripting that might be more complex with PAC CLI alone.
+
+### Azure CLI (az) - For Managing Azure Dependencies
+Often, a robust Power Platform solution relies on Azure resources (e.g., Azure Key Vault, Application Insights, Azure Functions).
+*   **Best for:** Creating and managing Azure resource groups and any other Azure services that support your Power Platform solutions.
+*   **Why:** It completes your toolchain, allowing you to manage the entire application landscape (Power Platform components and their Azure dependencies) from the command line.
+
+### Summary: Your Recommended Toolchain
+
+| Tool                 | Primary Use Case                             | Platform      |
+| -------------------- | -------------------------------------------- | ------------- |
+| **Power Platform CLI** | Developer tasks, ALM, Solution Management    | **Cross-Platform** |
+| **PowerShell Modules** | Administrative scripting, Policy Management  | Windows, macOS, Linux |
+| **Azure CLI**          | Managing underlying Azure resources          | Cross-Platform  |
